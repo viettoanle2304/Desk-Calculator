@@ -1,0 +1,1 @@
+/Library/Developer/CommandLineTools/usr/bin/c++  -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/Desk_Calculator.dir/main.cpp.o CMakeFiles/Desk_Calculator.dir/utility.cpp.o CMakeFiles/Desk_Calculator.dir/Stack.cpp.o  -o Desk_Calculator 

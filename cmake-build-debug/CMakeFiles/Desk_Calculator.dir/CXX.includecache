@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/viettoanle/Documents/Coding/Cplus/Desk-Calculator/Stack.h
+error_code.h
+/Users/viettoanle/Documents/Coding/Cplus/Desk-Calculator/error_code.h
+
+/Users/viettoanle/Documents/Coding/Cplus/Desk-Calculator/error_code.h
+
+/Users/viettoanle/Documents/Coding/Cplus/Desk-Calculator/main.cpp
+iostream
+-
+math.h
+-
+utility.h
+/Users/viettoanle/Documents/Coding/Cplus/Desk-Calculator/utility.h
+Stack.h
+/Users/viettoanle/Documents/Coding/Cplus/Desk-Calculator/Stack.h
+
+/Users/viettoanle/Documents/Coding/Cplus/Desk-Calculator/utility.h
+Stack.h
+/Users/viettoanle/Documents/Coding/Cplus/Desk-Calculator/Stack.h
+
