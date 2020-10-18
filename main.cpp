@@ -11,7 +11,6 @@ char get_command();
 double sum(Stack &numbers);
 
 int main() {
-    //new branch
     /*
      Post: The program has executed simple arithmetic commands entered by the user.
      Uses: The class Stack and the functions introduction, instructions, do_command, and get_command.
@@ -34,6 +33,9 @@ void instructions() {
     cout << "[?]to enter an integer onto the stack." << endl;
     cout << "[=] to print the top integer in the stack." << endl;
     cout << "[+] [-] [*] [/] are arithmetic operations." << endl;
+    cout << "[%] is remainder operation" << endl;
+    cout << "[^] is power increase operation" << endl;
+    cout << "[v] is square root operation" << endl;
     cout << "E[x]change two top numbers in the stack." << endl;
     cout << "[S]um all the numbers in the stack." << endl;
     cout << "[A]verage all numbers in the stack." << endl;
@@ -50,7 +52,8 @@ char get_command() {
         command = tolower(command);
         if (command == '?' || command == '=' || command == '+' ||
         command == '-' || command == '*' || command == '/' || command == 'q' ||
-        command == 'x' || command == 's' || command == 'a') {
+        command == 'x' || command == 's' || command == 'a' ||
+        command == '%' || command == '^' || command == 'v') {
             waiting = false;
         } else {
             cout << "Please enter a valid command: " << endl
@@ -149,6 +152,45 @@ bool do_command(char command, Stack &numbers) {
                     if (numbers.push(q / p) == overflow)
                         cout << "Warning: Stack full, lost result" << endl;
                 }
+            }
+            break;
+        case '%':
+            if (numbers.top(p) == underflow)
+                cout << "Stack empty" << endl;
+            else {
+                numbers.pop();
+                if (numbers.top(q) == underflow) {
+                    cout << "Stack has just one entry" << endl;
+                    numbers.push(p);
+                } else {
+                    numbers.pop();
+                    if (numbers.push((int) q % (int) p) == overflow)
+                        cout << "Warning: Stack full, lost result" << endl;
+                }
+            }
+            break;
+        case '^':
+            if (numbers.top(p) == underflow)
+                cout << "Stack empty" << endl;
+            else {
+                numbers.pop();
+                if (numbers.top(q) == underflow) {
+                    cout << "Stack has just one entry" << endl;
+                    numbers.push(p);
+                } else {
+                    numbers.pop();
+                    if (numbers.push(pow(q, p)) == overflow)
+                        cout << "Warning: Stack full, lost result" << endl;
+                }
+            }
+            break;
+        case 'v':
+            if(numbers.top(p) == underflow)
+                cout << "Stack empty" << endl;
+            else {
+                numbers.pop();
+                if (numbers.push(sqrt(p)) == overflow)
+                    cout << "Warning: Stack full, lost result" << endl;
             }
             break;
         case 'x':
