@@ -307,7 +307,7 @@ double sum(Stack &numbers) {
      Post: The sum of all entries in the stack is returned.
      Uses: The class Stack
      */
-    double p, sum;
+    double p, sum = 0.0;
     Stack temp;
     while (!numbers.empty()) {
         numbers.top(p);
