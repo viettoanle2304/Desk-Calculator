@@ -61,7 +61,7 @@ void instructions() {
 }
 
 char get_command_noprompts(string &str, Stack &numbers) {
-    char command;
+    char command = '\0';
 
     for (int i = 0; i < str.length(); ++i) {
         if (str[i] == '_' && isdigit(str[i+1])){
@@ -103,7 +103,7 @@ char get_command_noprompts(string &str, Stack &numbers) {
 }
 
 char get_command_prompts() {
-    char command;
+    char command = '\0';
     bool waiting = true;
     cout << "Select command and press <Enter>: ";
 

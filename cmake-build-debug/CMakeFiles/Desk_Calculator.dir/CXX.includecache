@@ -6,6 +6,10 @@
 
 #IncludeRegexTransform: 
 
+/Users/viettoanle/Documents/Coding/Cplus/Desk-Calculator/Stack.cpp
+Stack.h
+/Users/viettoanle/Documents/Coding/Cplus/Desk-Calculator/Stack.h
+
 /Users/viettoanle/Documents/Coding/Cplus/Desk-Calculator/Stack.h
 error_code.h
 /Users/viettoanle/Documents/Coding/Cplus/Desk-Calculator/error_code.h
@@ -23,6 +27,14 @@ Stack.h
 /Users/viettoanle/Documents/Coding/Cplus/Desk-Calculator/Stack.h
 sstream
 -
+
+/Users/viettoanle/Documents/Coding/Cplus/Desk-Calculator/utility.cpp
+iostream
+-
+Stack.h
+/Users/viettoanle/Documents/Coding/Cplus/Desk-Calculator/Stack.h
+utility.h
+/Users/viettoanle/Documents/Coding/Cplus/Desk-Calculator/utility.h
 
 /Users/viettoanle/Documents/Coding/Cplus/Desk-Calculator/utility.h
 Stack.h

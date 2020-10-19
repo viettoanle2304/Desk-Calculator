@@ -72,6 +72,9 @@ Stack::Stack() {
     */
 
     count = 0;
+    for (int i = 0; i < maxstack; ++i) {
+        entry[i] = 0;
+    }
 }
 
 Error_code copy_stack(Stack &dest, Stack &source) {
