@@ -1,14 +1,17 @@
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include "utility.h"
 #include "Stack.h"
+#include <sstream>
 using namespace std;
 
 void introduction();
 void instructions();
 bool do_command(char command, Stack &numbers);
-char get_command();
+char get_command_prompts();
 double sum(Stack &numbers);
+void convert(string str, Stack &s);
+char get_command_noprompts(string &str, Stack &numbers);
 
 int main() {
     /*
@@ -16,9 +19,23 @@ int main() {
      Uses: The class Stack and the functions introduction, instructions, do_command, and get_command.
      */
     Stack stored_numbers;
-    introduction();
-    instructions();
-    while(do_command(get_command(), stored_numbers));
+    string str;
+    getline(cin, str);
+
+    if (str == "-p") {
+        str = "";
+        introduction();
+        instructions();
+        while(do_command(get_command_prompts(), stored_numbers));
+    } else{
+        while (str != "q") {
+            do {
+                do_command(get_command_noprompts(str, stored_numbers), stored_numbers) && !str.empty();
+            } while (!str.empty());
+            getline(cin, str);
+        }
+    }
+
     return 0;
 }
 
@@ -33,13 +50,59 @@ void instructions() {
     cout << "[?]to enter an integer onto the stack." << endl;
     cout << "[=] to print the top integer in the stack." << endl;
     cout << "[+] [-] [*] [/] are arithmetic operations." << endl;
+    cout << "[%] is remainder operation" << endl;
+    cout << "[^] is power increase operation" << endl;
+    cout << "[v] is square root operation" << endl;
     cout << "E[x]change two top numbers in the stack." << endl;
     cout << "[S]um all the numbers in the stack." << endl;
     cout << "[A]verage all numbers in the stack." << endl;
+    cout << "[C]lear all saved entries in the stack." << endl;
     cout << "[Q]uit" << endl;
 }
 
-char get_command() {
+char get_command_noprompts(string &str, Stack &numbers) {
+    char command;
+
+    for (int i = 0; i < str.length(); ++i) {
+        if (str[i] == '_' && isdigit(str[i+1])){
+            str[i] = '-';
+            i += 2;
+        } else if (str[i] != ' ' && !isdigit(str[i])) {
+            if (str[i+1] == ' ' || str[i+1] == '\0'){
+                if (str[i] == '?' || str[i] == 'p' || str[i] == '+' ||
+                    str[i] == '-' || str[i] == '*' || str[i] == '/' || str[i] == 'q' ||
+                    str[i] == 'x' || str[i] == 's' || str[i] == 'a' ||
+                    str[i] == '%' || str[i] == '^' || str[i] == 'v' || str[i] == 'c') {
+                    string temp;
+                    if (i != 0) {
+                        temp = str.substr(0, i - 1);
+                        convert(temp, numbers);
+                    }
+                    command = tolower(str[i]);
+                    str.erase(0, i+2);
+                    break;
+                } else {
+                    cout << "Please enter a valid command. Valid command example '1 2 +' -> 1 + 2 = 3" << endl;
+                    break;
+                }
+            } else {
+                cout << "Please enter a valid command. Valid command example '1 2 +' -> 1 + 2 = 3" << endl;
+                break;
+            }
+        }
+
+        if (str[i] == '\0' && command == NULL) {
+            string temp;
+            temp = str.substr(0, i - 1);
+            str.erase(0, i);
+            cout << "No operation provided. All data is saved in stack.\n'c' to clear all data." << endl;
+        }
+    }
+
+    return command;
+}
+
+char get_command_prompts() {
     char command;
     bool waiting = true;
     cout << "Select command and press <Enter>: ";
@@ -49,15 +112,17 @@ char get_command() {
         command = tolower(command);
         if (command == '?' || command == '=' || command == '+' ||
         command == '-' || command == '*' || command == '/' || command == 'q' ||
-        command == 'x' || command == 's' || command == 'a') {
+        command == 'x' || command == 's' || command == 'a' ||
+        command == '%' || command == '^' || command == 'v' || command == 'c') {
             waiting = false;
         } else {
             cout << "Please enter a valid command: " << endl
-                << "[?]push to stack\t[=]print top" << endl
+                << "[?]push to stack\t[P]rint top" << endl
                 << "[+] [-] [*] [/] are arithmetic operations" << endl
-                << "E[x]change two top numbers in the stack." << endl
-                << "[S]um all the numbers in the stack." << endl
+                << "E[x]change two top numbers in the stack" << endl
+                << "[S]um all the numbers in the stack" << endl
                 << "[A]verage all the numbers in the stack" << endl
+                << "[C]lear all the numbers in the stack" << endl
                 << "[Q]uit." << endl;
         }
     }
@@ -82,12 +147,15 @@ bool do_command(char command, Stack &numbers) {
                 cout << "Warning: Stack full, lost number" << endl;
             }
             break;
-        case '=':
+        case 'p':
             if (numbers.top(p) == underflow) {
                 cout << "Stack empty" << endl;
             } else {
                 cout << p << endl;
             }
+            break;
+        case 'c':
+            clear(numbers);
             break;
         case '+':
             if (numbers.top(p) ==underflow) {
@@ -148,6 +216,45 @@ bool do_command(char command, Stack &numbers) {
                     if (numbers.push(q / p) == overflow)
                         cout << "Warning: Stack full, lost result" << endl;
                 }
+            }
+            break;
+        case '%':
+            if (numbers.top(p) == underflow)
+                cout << "Stack empty" << endl;
+            else {
+                numbers.pop();
+                if (numbers.top(q) == underflow) {
+                    cout << "Stack has just one entry" << endl;
+                    numbers.push(p);
+                } else {
+                    numbers.pop();
+                    if (numbers.push((int) q % (int) p) == overflow)
+                        cout << "Warning: Stack full, lost result" << endl;
+                }
+            }
+            break;
+        case '^':
+            if (numbers.top(p) == underflow)
+                cout << "Stack empty" << endl;
+            else {
+                numbers.pop();
+                if (numbers.top(q) == underflow) {
+                    cout << "Stack has just one entry" << endl;
+                    numbers.push(p);
+                } else {
+                    numbers.pop();
+                    if (numbers.push(pow(q, p)) == overflow)
+                        cout << "Warning: Stack full, lost result" << endl;
+                }
+            }
+            break;
+        case 'v':
+            if(numbers.top(p) == underflow)
+                cout << "Stack empty" << endl;
+            else {
+                numbers.pop();
+                if (numbers.push(sqrt(p)) == overflow)
+                    cout << "Warning: Stack full, lost result" << endl;
             }
             break;
         case 'x':
@@ -218,3 +325,16 @@ double sum(Stack &numbers) {
     return sum;
 }
 
+void convert(string str, Stack &s) {
+    stringstream ss;
+    ss << str;
+
+    int temp;
+    while (!ss.eof()) {
+        ss >> temp;
+        if (s.push(temp) == overflow) {
+            cout << "Warning: Stack full, lost input" << endl;
+            break;
+        }
+    }
+}
