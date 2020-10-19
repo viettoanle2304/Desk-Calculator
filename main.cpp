@@ -10,7 +10,7 @@ bool do_command(char command, Stack &numbers);
 char get_command();
 double sum(Stack &numbers);
 
-int main() {
+int main() { //Something to add
     /*
      Post: The program has executed simple arithmetic commands entered by the user.
      Uses: The class Stack and the functions introduction, instructions, do_command, and get_command.
