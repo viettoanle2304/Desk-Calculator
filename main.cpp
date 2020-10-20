@@ -3,6 +3,7 @@
 #include "utility.h"
 #include "Stack.h"
 #include <sstream>
+#include <algorithm>
 using namespace std;
 
 void introduction();
@@ -12,6 +13,8 @@ char get_command_prompts();
 double sum(Stack &numbers);
 void convert(string str, Stack &s);
 char get_command_noprompts(string &str, Stack &numbers);
+void program_handle(string &str, Stack &numbers);
+void run_program(bool switch_ui, string &str, Stack &numbers);
 
 int main() {
     /*
@@ -20,21 +23,8 @@ int main() {
      */
     Stack stored_numbers;
     string str;
-    getline(cin, str);
 
-    if (str == "-p") {
-        str = "";
-        introduction();
-        instructions();
-        while(do_command(get_command_prompts(), stored_numbers));
-    } else{
-        while (str != "q") {
-            do {
-                do_command(get_command_noprompts(str, stored_numbers), stored_numbers) && !str.empty();
-            } while (!str.empty());
-            getline(cin, str);
-        }
-    }
+    program_handle(str, stored_numbers);
 
     return 0;
 }
@@ -57,46 +47,49 @@ void instructions() {
     cout << "[S]um all the numbers in the stack." << endl;
     cout << "[A]verage all numbers in the stack." << endl;
     cout << "[C]lear all saved entries in the stack." << endl;
+    cout << "S[w]itch to no prompts ui." << endl;
     cout << "[Q]uit" << endl;
 }
 
 char get_command_noprompts(string &str, Stack &numbers) {
     char command = '\0';
+    string temp;
 
-    for (int i = 0; i < str.length(); ++i) {
-        if (str[i] == '_' && isdigit(str[i+1])){
-            str[i] = '-';
-            i += 2;
-        } else if (str[i] != ' ' && !isdigit(str[i])) {
-            if (str[i+1] == ' ' || str[i+1] == '\0'){
-                if (str[i] == '?' || str[i] == 'p' || str[i] == '+' ||
-                    str[i] == '-' || str[i] == '*' || str[i] == '/' || str[i] == 'q' ||
-                    str[i] == 'x' || str[i] == 's' || str[i] == 'a' ||
-                    str[i] == '%' || str[i] == '^' || str[i] == 'v' || str[i] == 'c') {
-                    string temp;
-                    if (i != 0) {
-                        temp = str.substr(0, i - 1);
-                        convert(temp, numbers);
-                    }
-                    command = tolower(str[i]);
-                    str.erase(0, i+2);
-                    break;
-                } else {
-                    cout << "Please enter a valid command. Valid command example '1 2 +' -> 1 + 2 = 3" << endl;
-                    break;
-                }
-            } else {
-                cout << "Please enter a valid command. Valid command example '1 2 +' -> 1 + 2 = 3" << endl;
-                break;
-            }
-        }
+    // Replace all '_' into '-' if it means negative
+    int index = -1;
+    replace_if(str.begin(), str.end(), [&str, &index](char c) {
+        ++index;
+        return (c == '_' && isdigit(str[index+1]));
+    }, '-');
 
-        if (str[i] == '\0' && command == NULL) {
-            string temp;
-            temp = str.substr(0, i - 1);
-            str.erase(0, i);
-            cout << "No operation provided. All data is saved in stack.\n'c' to clear all data." << endl;
-        }
+    // Take out each numbers/command
+    if (any_of(str.begin(), str.end(), [](char c){
+        return (c == ' ');
+    })) {
+        size_t pos = str.find(' ');
+        temp = str.substr(0, pos);
+        str.erase(0, pos + 1);
+    } else {
+        temp = str;
+        str.clear();
+    }
+
+    if (temp == "p" || temp == "+" ||
+        temp == "-" || temp == "*" || temp == "/" || temp == "q" ||
+        temp == "x" || temp == "s" || temp == "a" ||
+        temp == "%" || temp == "^" || temp == "v" || temp == "c") {
+        command = tolower(temp[0]);
+        if (command == 'p')
+            command = '=';
+    } else if (!str.empty() && all_of(temp.begin(), temp.end(), [](char c) {
+        return (c == '-' || isdigit(c));
+    })){
+        convert(temp, numbers);
+    } else if (temp == "-p") {
+        cout << "Warning: -p is an invalid command in calculation." << endl
+            << R"(If you mean "open prompts ui", please use standalone "-p" command again.)" << endl;
+    } else if (!temp.empty()){
+        cout << "Warning: " << temp << " is an invalid command." << endl;
     }
 
     return command;
@@ -112,17 +105,18 @@ char get_command_prompts() {
         command = tolower(command);
         if (command == '?' || command == '=' || command == '+' ||
         command == '-' || command == '*' || command == '/' || command == 'q' ||
-        command == 'x' || command == 's' || command == 'a' ||
+        command == 'x' || command == 's' || command == 'a' || command == 'w' ||
         command == '%' || command == '^' || command == 'v' || command == 'c') {
             waiting = false;
         } else {
             cout << "Please enter a valid command: " << endl
-                << "[?]push to stack\t[P]rint top" << endl
+                << "[?]push to stack\t[=]print top" << endl
                 << "[+] [-] [*] [/] are arithmetic operations" << endl
                 << "E[x]change two top numbers in the stack" << endl
                 << "[S]um all the numbers in the stack" << endl
                 << "[A]verage all the numbers in the stack" << endl
                 << "[C]lear all the numbers in the stack" << endl
+                << "S[w]itch to no prompts ui." << endl
                 << "[Q]uit." << endl;
         }
     }
@@ -147,7 +141,7 @@ bool do_command(char command, Stack &numbers) {
                 cout << "Warning: Stack full, lost number" << endl;
             }
             break;
-        case 'p':
+        case '=':
             if (numbers.top(p) == underflow) {
                 cout << "Stack empty" << endl;
             } else {
@@ -295,9 +289,12 @@ bool do_command(char command, Stack &numbers) {
                     cout << "Warning: Stack full, lost result" << endl;
             }
             break;
+        case 'w':
+            cout << "UI: turned off\n" << endl;
+            return false;
         case 'q':
             cout << "Calculation finished." << endl;
-            return false;
+            exit(0);
     }
     return true;
 }
@@ -336,5 +333,33 @@ void convert(string str, Stack &s) {
             cout << "Warning: Stack full, lost input" << endl;
             break;
         }
+    }
+}
+
+void program_handle(string &str, Stack &numbers) {
+    bool ui = false;
+
+    getline(cin, str);
+
+    if (str == "-p") {
+        ui = true;
+        run_program(ui, str, numbers);
+    } else {
+        ui = false;
+        run_program(ui, str, numbers);
+    }
+
+    program_handle(str, numbers);
+}
+
+void run_program(bool switch_ui, string &str, Stack &numbers) {
+    if (switch_ui) {
+        introduction();
+        instructions();
+        while(do_command(get_command_prompts(), numbers));
+    } else {
+        do {
+            do_command(get_command_noprompts(str, numbers), numbers);
+        } while (!str.empty());
     }
 }
