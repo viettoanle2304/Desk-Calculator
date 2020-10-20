@@ -11,7 +11,7 @@ void instructions();
 bool do_command(char command, Stack &numbers);
 char get_command_prompts();
 double sum(Stack &numbers);
-void convert(string str, Stack &s);
+void convert(const string& str, Stack &s);
 char get_command_noprompts(string &str, Stack &numbers);
 void program_run(string &str, Stack &numbers);
 void program_handle(bool switch_ui, string &str, Stack &numbers);
@@ -322,7 +322,7 @@ double sum(Stack &numbers) {
     return sum;
 }
 
-void convert(string str, Stack &s) {
+void convert(const string& str, Stack &s) {
     stringstream ss;
     ss << str;
 
