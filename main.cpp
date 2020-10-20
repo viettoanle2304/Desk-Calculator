@@ -13,8 +13,8 @@ char get_command_prompts();
 double sum(Stack &numbers);
 void convert(string str, Stack &s);
 char get_command_noprompts(string &str, Stack &numbers);
-void program_handle(string &str, Stack &numbers);
-void run_program(bool switch_ui, string &str, Stack &numbers);
+void program_run(string &str, Stack &numbers);
+void program_handle(bool switch_ui, string &str, Stack &numbers);
 
 int main() {
     /*
@@ -24,7 +24,7 @@ int main() {
     Stack stored_numbers;
     string str;
 
-    program_handle(str, stored_numbers);
+    program_run(str, stored_numbers);
 
     return 0;
 }
@@ -336,23 +336,23 @@ void convert(string str, Stack &s) {
     }
 }
 
-void program_handle(string &str, Stack &numbers) {
+void program_run(string &str, Stack &numbers) {
     bool ui = false;
 
     getline(cin, str);
 
     if (str == "-p") {
         ui = true;
-        run_program(ui, str, numbers);
+        program_handle(ui, str, numbers);
     } else {
         ui = false;
-        run_program(ui, str, numbers);
+        program_handle(ui, str, numbers);
     }
 
-    program_handle(str, numbers);
+    program_run(str, numbers);
 }
 
-void run_program(bool switch_ui, string &str, Stack &numbers) {
+void program_handle(bool switch_ui, string &str, Stack &numbers) {
     if (switch_ui) {
         introduction();
         instructions();
